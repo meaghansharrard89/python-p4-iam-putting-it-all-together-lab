@@ -4,6 +4,21 @@ from sqlalchemy_serializer import SerializerMixin
 from config import db, bcrypt
 
 
+class Recipe(db.Model, SerializerMixin):
+    __tablename__ = "recipes"
+    __table_args__ = (db.CheckConstraint("length(instructions) >= 50"),)
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, nullable=False)
+    instructions = db.Column(db.String, nullable=False)
+    minutes_to_complete = db.Column(db.Integer)
+
+    user_id = db.Column(db.Integer(), db.ForeignKey("users.id"))
+
+    def __repr__(self):
+        return f"<Recipe {self.id}: {self.title}>"
+
+
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
 
@@ -34,18 +49,3 @@ class User(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f"<User {self.username}>"
-
-
-class Recipe(db.Model, SerializerMixin):
-    __tablename__ = "recipes"
-    __table_args__ = (db.CheckConstraint("length(instructions) >= 50"),)
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    instructions = db.Column(db.String, nullable=False)
-    minutes_to_complete = db.Column(db.Integer)
-
-    user_id = db.Column(db.Integer(), db.ForeignKey("users.id"))
-
-    def __repr__(self):
-        return f"<Recipe {self.id}: {self.title}>"
